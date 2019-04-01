@@ -353,14 +353,16 @@ def test_zhuan_zhang_select():
 
     assert len(rows) == r_resu.json()["data"]["count"]
 
+    isSuccess = False
     for row in rows:
 
         print(row[0])
         if str(row[0]) == str(277297765262983168):
             print(row[0])
+            isSuccess = True
             break
 
-
+    assert isSuccess == True
 
 
 
