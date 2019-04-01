@@ -33,10 +33,10 @@ class Data_Base_Conn(object):
         # 获取SELECT返回的 列表list，rows是列表，每一条数据是列表中的一个值，每条数据是 元组
         rows = course.fetchall()
         return rows
+
         # print(len(rows))
-        for row in rows:
+        # for row in rows:
             # print(row)  每个row是一个元组
-            pass
             # print(len(row))
             # for i in row:
             #     print(i)
@@ -44,7 +44,7 @@ class Data_Base_Conn(object):
             # print(type(row))
 
         course.close()      # 关闭游标
-        conns.close()       #关闭连接
+        conns.close()       # 关闭连接
 
 # 关闭游标
 # course.close()
