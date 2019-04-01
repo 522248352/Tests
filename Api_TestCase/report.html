@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function find_all(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sort_column(elem) {
+    toggle_sort_states(elem);
+    var colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    var key;
+    if (elem.classList.contains('numeric')) {
+        key = key_num;
+    } else if (elem.classList.contains('result')) {
+        key = key_result;
+    } else {
+        key = key_alpha;
+    }
+    sort_table(elem, key(colIndex));
+}
+
+function show_all_extras() {
+    find_all('.col-result').forEach(show_extras);
+}
+
+function hide_all_extras() {
+    find_all('.col-result').forEach(hide_extras);
+}
+
+function show_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.remove("collapsed");
+    expandcollapse.classList.remove("expander");
+    expandcollapse.classList.add("collapser");
+}
+
+function hide_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.add("collapsed");
+    expandcollapse.classList.remove("collapser");
+    expandcollapse.classList.add("expander");
+}
+
+function show_filters() {
+    var filter_items = document.getElementsByClassName('filter');
+    for (var i = 0; i < filter_items.length; i++)
+        filter_items[i].hidden = false;
+}
+
+function add_collapse() {
+    // Add links for show/hide all
+    var resulttable = find('table#results-table');
+    var showhideall = document.createElement("p");
+    showhideall.innerHTML = '<a href="javascript:show_all_extras()">Show all details</a> / ' +
+                            '<a href="javascript:hide_all_extras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    find_all('.col-result').forEach(function(elem) {
+        var collapsed = get_query_parameter('collapsed') || 'Passed';
+        var extras = elem.parentNode.nextElementSibling;
+        var expandcollapse = document.createElement("span");
+        if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add("collapsed");
+            expandcollapse.classList.add("expander");
+        } else {
+            expandcollapse.classList.add("collapser");
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener("click", function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains("collapsed")) {
+                show_extras(event.currentTarget);
+            } else {
+                hide_extras(event.currentTarget);
+            }
+        });
+    })
+}
+
+function get_query_parameter(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () {
+    reset_sort_headers();
+
+    add_collapse();
+
+    show_filters();
+
+    toggle_sort_states(find('.initial-sort'));
+
+    find_all('.sortable').forEach(function(elem) {
+        elem.addEventListener("click",
+                              function(event) {
+                                  sort_column(elem);
+                              }, false)
+    });
+
+};
+
+function sort_table(clicked, key_func) {
+    var rows = find_all('.results-table-row');
+    var reversed = !clicked.classList.contains('asc');
+    var sorted_rows = sort(rows, key_func, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    var thead = document.getElementById("results-table-head");
+    document.getElementById('results-table').remove();
+    var parent = document.createElement("table");
+    parent.id = "results-table";
+    parent.appendChild(thead);
+    sorted_rows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName("BODY")[0].appendChild(parent);
+}
+
+function sort(items, key_func, reversed) {
+    var sort_array = items.map(function(item, i) {
+        return [key_func(item), i];
+    });
+    var multiplier = reversed ? -1 : 1;
+
+    sort_array.sort(function(a, b) {
+        var key_a = a[0];
+        var key_b = b[0];
+        return multiplier * (key_a >= key_b ? 1 : -1);
+    });
+
+    return sort_array.map(function(item) {
+        var index = item[1];
+        return items[index];
+    });
+}
+
+function key_alpha(col_index) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[col_index].firstChild.data.toLowerCase();
+    };
+}
+
+function key_num(col_index) {
+    return function(elem) {
+        return parseFloat(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function key_result(col_index) {
+    return function(elem) {
+        var strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+                       'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function reset_sort_headers() {
+    find_all('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    find_all('.sortable').forEach(function(elem) {
+        var icon = document.createElement("div");
+        icon.className = "sort-icon";
+        icon.textContent = "vvv";
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove("desc", "active");
+        elem.classList.add("asc", "inactive");
+    });
+}
+
+function toggle_sort_states(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        reset_sort_headers();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function is_all_rows_hidden(value) {
+  return value.hidden == false;
+}
+
+function filter_table(elem) {
+    var outcome_att = "data-test-result";
+    var outcome = elem.getAttribute(outcome_att);
+    class_outcome = outcome + " results-table-row";
+    var outcome_rows = document.getElementsByClassName(class_outcome);
+
+    for(var i = 0; i < outcome_rows.length; i++){
+        outcome_rows[i].hidden = !elem.checked;
+    }
+
+    var rows = find_all('.results-table-row').filter(is_all_rows_hidden);
+    var all_rows_hidden = rows.length == 0 ? true : false;
+    var not_found_message = document.getElementById("not-found-message");
+    not_found_message.hidden = !all_rows_hidden;
+}
+</script>
+    <h1>report.html</h1>
+    <p>Report generated on 15-Mar-2019 at 18:13:36 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v1.20.0</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>JAVA_HOME</td>
+        <td>D:\Java\jdk1.8.0_161</td></tr>
+      <tr>
+        <td>Packages</td>
+        <td>{&apos;py&apos;: &apos;1.8.0&apos;, &apos;pytest&apos;: &apos;4.3.1&apos;, &apos;pluggy&apos;: &apos;0.9.0&apos;}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Windows-10-10.0.17134</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{&apos;html&apos;: &apos;1.20.0&apos;, &apos;allure-pytest&apos;: &apos;2.6.0&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>2.7.15</td></tr></table>
+    <h2>Summary</h2>
+    <p>1 tests ran in 0.77 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">1 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable numeric" col="duration">Duration</th>
+          <th>Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">test_case.py::test_cash_account_enquriry</td>
+          <td class="col-duration">0.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">----------------------------- Captured stdout call -----------------------------<br/>{u'status': 1, u'dataSign': u'EdcwTt3f1F1ta6zn1Sbf3FoH8iZYROBEs7nHTyPZ21gvJiW4QFBmOzmer/UuzgkmGDkT+fBJgKjMZ9tq4zvNcF8jlDNdF35ns81eJpxoT44BKqBLWHtJJeyMZ3erocRkhwY0sjhsaaXTW6pFuyUwp76rK2uP2Fsp7/oKihKunmg=', u'code': 101, u'data': {u'count': 6, u'list': [{u'bankAccount': u'234', u'wdaccId': u'171870615236644864', u'accountType': 0, u'accountName': u'\u8bf4\u7684', u'bankName': u'234', u'auditStatus': 1, u'currencyCode': u'USD', u'swiftCode': u'234', u'branchBankName': u'', u'contactName': u'\u8bf4\u7684', u'accountNameEn': u'234234', u'contactPhone': u'15025663521', u'phoneCode': u'+86', u'branchAddr': u'\u4e2d\u56fd234', u'merNo': u'171805655366242304'}, {u'bankAccount': u'5256555501', u'wdaccId': u'171883251793821696', u'accountType': 0, u'bankName': u'\u4e2d\u56fd\u94f6\u884c', u'auditStatus': 1, u'currencyCode': u'USD', u'accountName': u'\u8bf4\u7684', u'branchBankName': u'\u5f00\u6237\u884c\u652f\u884c', u'contactName': u'\u8bf4\u7684', u'contactPhone': u'15252445241', u'phoneCode': u'+86', u'branchAddr': u'\u6492\u5927\u58f0\u5730', u'merNo': u'171805655366242304'}, {u'bankAccount': u'444455556666', u'wdaccId': u'183183462285578240', u'accountType': 0, u'accountName': u'\u8bf4\u7684', u'bankName': u'\u4e2d\u56fd\u5efa\u8bbe\u94f6\u884c', u'auditStatus': 1, u'currencyCode': u'CNY', u'swiftCode': u'', u'branchBankName': u'\u5f00\u6237\u652f\u884c\u540d\u79f0', u'contactName': u'\u8bf4\u7684', u'accountNameEn': u'', u'contactPhone': u'15252635214', u'phoneCode': u'+86', u'branchAddr': u'\u4e2d\u56fd\u4e0a\u6d77\u4e0a\u6d77\u5f53\u65f6\u7684\u6cd5\u56fd', u'merNo': u'171805655366242304'}, {u'bankAccount': u'3464555555666', u'wdaccId': u'234125739518201856', u'accountType': 0, u'accountName': u'\u8bf4\u7684', u'bankName': u'SDFFD', u'auditStatus': 0, u'currencyCode': u'USD', u'swiftCode': u'DFGDF', u'branchBankName': u'', u'contactName': u'\u8bf4\u7684', u'accountNameEn': u'dfsd', u'contactPhone': u'54345345345', u'phoneCode': u'+86', u'branchAddr': u'\u4e2d\u56fd\u9999\u6e2fDFGDF', u'merNo': u'171805655366242304'}, {u'bankAccount': u'20181130001', u'wdaccId': u'234127624455225344', u'accountType': 0, u'bankName': u'SDFSD', u'auditStatus': 0, u'currencyCode': u'CNY', u'accountName': u'\u8bf4\u7684', u'contactName': u'\u8bf4\u7684', u'contactPhone': u'12521', u'phoneCode': u'+86', u'branchAddr': u'DSFSD', u'merNo': u'171805655366242304'}, {u'bankAccount': u'55', u'wdaccId': u'267171344326725632', u'accountType': 0, u'accountName': u'\u8bf4\u7684', u'bankName': u'\u4e2d\u56fd\u94f6\u884c', u'auditStatus': 1, u'currencyCode': u'CNY', u'swiftCode': u'', u'branchBankName': u'\u6cdb\u6d77\u56fd\u9645', u'contactName': u'\u8bf4\u7684', u'accountNameEn': u'', u'contactPhone': u'15527237820', u'phoneCode': u'+86', u'branchAddr': u'\u4e2d\u56fd\u6e56\u5317\u6b66\u6c49\u6b66\u6c49\u652f\u884c', u'merNo': u'171805655366242304'}], u'merNo': u'171805655366242304'}, u'sign': u'jnMK9xvNJyI4KtohF9TSrw66Ewm2+LUeOHlZtSYKAIYcbYhEsQBEJb++0hC1uCa7qUVThBVhe3SXrvaD9WN/mkskUjxOHgMCxLDshss6cS7206AjayAsZ7dS4WI3reDvfa4IO5YqPyitQ5Vohlo310EUVcd5vqOA0vdOWK/6Nzo='}
+()
+171870615236644864
+171883251793821696
+183183462285578240
+234125739518201856
+234127624455225344
+267171344326725632
+[u'171870615236644864', u'171883251793821696', u'183183462285578240', u'234125739518201856', u'234127624455225344', u'267171344326725632']
+(171870615236644864L, 171805655366242304L, 171805547945926656L, 1, datetime.datetime(2018, 6, 11, 16, 12, 28, 777000), datetime.datetime(2018, 6, 11, 16, 12, 28, 777000), None, '234', 0, '15025663521', '\xe8\xaf\xb4\xe7\x9a\x84', None, '234', '\xe4\xb8\xad\xe5\x9b\xbd234', '234', '', None, 'USD', '\xe8\xaf\xb4\xe7\x9a\x84', '1', None, 1, None, None, '234234', None, '+86', 'CHN')
+(171883251793821696L, 171805655366242304L, 0L, 1, datetime.datetime(2018, 6, 11, 17, 2, 41, 567000), datetime.datetime(2018, 6, 11, 17, 2, 41, 567000), None, '5256555501', 0, '15252445241', '\xe8\xaf\xb4\xe7\x9a\x84', None, '\xe4\xb8\xad\xe5\x9b\xbd\xe9\x93\xb6\xe8\xa1\x8c', '\xe6\x92\x92\xe5\xa4\xa7\xe5\xa3\xb0\xe5\x9c\xb0', None, '\xe5\xbc\x80\xe6\x88\xb7\xe8\xa1\x8c\xe6\x94\xaf\xe8\xa1\x8c', None, 'USD', '\xe8\xaf\xb4\xe7\x9a\x84', '1', None, 1, None, None, None, None, '+86', 'CHN')
+(183183462285578240L, 171805655366242304L, 171805547945926656L, 1, datetime.datetime(2018, 7, 12, 21, 25, 41, 696000), datetime.datetime(2018, 7, 12, 21, 25, 41, 696000), None, '444455556666', 0, '15252635214', '\xe8\xaf\xb4\xe7\x9a\x84', None, '\xe4\xb8\xad\xe5\x9b\xbd\xe5\xbb\xba\xe8\xae\xbe\xe9\x93\xb6\xe8\xa1\x8c', '\xe4\xb8\xad\xe5\x9b\xbd\xe4\xb8\x8a\xe6\xb5\xb7\xe4\xb8\x8a\xe6\xb5\xb7\xe5\xbd\x93\xe6\x97\xb6\xe7\x9a\x84\xe6\xb3\x95\xe5\x9b\xbd', '', '\xe5\xbc\x80\xe6\x88\xb7\xe6\x94\xaf\xe8\xa1\x8c\xe5\x90\x8d\xe7\xa7\xb0', None, 'CNY', '\xe8\xaf\xb4\xe7\x9a\x84', '1', None, 1, None, None, '', 19945485791916035L, '+86', 'CHN')
+(234125739518201856L, 171805655366242304L, 171805547945926656L, 1, datetime.datetime(2018, 11, 30, 11, 12, 7, 50000), datetime.datetime(2018, 11, 30, 11, 12, 7, 50000), None, '3464555555666', 0, '54345345345', '\xe8\xaf\xb4\xe7\x9a\x84', None, 'SDFFD', '\xe4\xb8\xad\xe5\x9b\xbd\xe9\xa6\x99\xe6\xb8\xafDFGDF', 'DFGDF', '', None, 'USD', '\xe8\xaf\xb4\xe7\x9a\x84', None, None, 0, None, None, 'dfsd', None, '+86', 'HKG')
+(234127624455225344L, 171805655366242304L, 0L, 1, datetime.datetime(2018, 11, 30, 11, 19, 36, 454000), datetime.datetime(2018, 11, 30, 11, 19, 36, 454000), None, '20181130001', 0, '12521', '\xe8\xaf\xb4\xe7\x9a\x84', None, 'SDFSD', 'DSFSD', None, None, None, 'CNY', '\xe8\xaf\xb4\xe7\x9a\x84', None, None, 0, None, None, None, None, '+86', 'HKG')
+(267171344326725632L, 171805655366242304L, 171805547945926656L, 1, datetime.datetime(2019, 3, 1, 15, 43, 33, 194000), datetime.datetime(2019, 3, 1, 15, 43, 33, 194000), None, '55', 0, '15527237820', '\xe8\xaf\xb4\xe7\x9a\x84', None, '\xe4\xb8\xad\xe5\x9b\xbd\xe9\x93\xb6\xe8\xa1\x8c', '\xe4\xb8\xad\xe5\x9b\xbd\xe6\xb9\x96\xe5\x8c\x97\xe6\xad\xa6\xe6\xb1\x89\xe6\xad\xa6\xe6\xb1\x89\xe6\x94\xaf\xe8\xa1\x8c', '', '\xe6\xb3\x9b\xe6\xb5\xb7\xe5\x9b\xbd\xe9\x99\x85', None, 'CNY', '\xe8\xaf\xb4\xe7\x9a\x84', '1', None, 1, None, None, '', 19945482306449410L, '+86', 'CHN')
+[171870615236644864L, 171883251793821696L, 183183462285578240L, 234125739518201856L, 234127624455225344L, 267171344326725632L]
+-1
+</div></td></tr></tbody></table></body></html>
