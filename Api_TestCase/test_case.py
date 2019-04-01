@@ -381,3 +381,4 @@ if __name__ == '__main__':
     a = hi(name='ali')
     print(a)
     print(a())
+    print("费欧服成功")
