@@ -350,35 +350,20 @@ def test_zhuan_zhang_select():
     db = Data_Base_Conn()
     sql = "SELECT * FROM p_transaction WHERE MER_NO =" + MERNO_NO_USERID
     rows = db.play(sql=sql)
-    print(type(rows))
+
     assert len(rows) == r_resu.json()["data"]["count"]
+
     for row in rows:
-        print(type(row))
+
         print(row[0])
-        print(type(row[0]))
         if str(row[0]) == str(277297765262983168):
             print(row[0])
             break
 
 
-def hi(name="yasoob"):
-    def greet():
-        return "now you are in the greet() function"
-
-    def welcome():
-        return "now you are in the welcome() function"
-
-    if name == "yasoob":
-        return greet
-    else:
-        return welcome
 
 
 
 if __name__ == '__main__':
     test_zhuan_zhang_select()
 
-    a = hi(name='ali')
-    print(a)
-    print(a())
-    print("费欧服成功69+01")
