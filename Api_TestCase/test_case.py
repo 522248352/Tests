@@ -388,6 +388,86 @@ def test_zhuan_zhang_select():
         assert 1 == 2
 
 
+# 添加提现银行卡
+def test_add_ti_xian_bank_card():
+
+    paths = "/transaction/addWithdrawAccount.htm"
+    pam = {"partnerId": PARTNERID,
+           "merNo": MERNO_NO_USERID,
+           "withdrawAccountryCountry": "CHN",
+           "currencyCode": "CNY",
+           "bankAccount": str(int(time.time())),
+           "contactPhone": "13055226325",
+           "bankName": "中国银行",
+           "branchBankName": "开户支行名称",
+           "branchAddr": "开户支行地址"}
+
+    r_obj = Public_Request()
+    r_resu = r_obj.public_request(pas=paths, parameters=pam)
+
+    print(json.dumps(r_resu.json(), indent=2, ensure_ascii=False, sort_keys=False))
+    assert r_resu.json()["status"] == 1
+    assert r_resu.json()["code"] == 40001
+
+    db = Data_Base_Conn()
+    sql = "SELECT * FROM m_withdraw where wdacc_id=" + r_resu.json()["data"]["wdaccId"]
+    rows = db.play(sql=sql)
+    print(type(rows))
+    print(len(rows))
+    assert len(rows) == 1
+    print(rows[0][0])
+
+
+# 提现银行账号-删除
+def test_ti_xian_zhang_hao_delete():
+
+    paths = "/transaction/deleteWithdrawAccount.htm"
+
+    db = Data_Base_Conn()
+    sql = "SELECT * FROM m_withdraw where MER_NO=" + MERNO_NO_USERID + "AND R_STATUS=1"
+    rows = db.play(sql=sql)
+
+    if len(rows) == 0:
+        print("没有可以删除的提现账号，会导致越界")
+
+    wdaid = rows[0][0]
+    print(wdaid)
+
+    pam = {"partnerId": PARTNERID,
+           "merNo": MERNO_NO_USERID,
+           "wdaccId": wdaid}
+
+    r_obj = Public_Request()
+
+    try:
+        r_resu = r_obj.public_request(pas=paths, parameters=pam)
+    except IndentationError as e:
+        print(e)
+
+    print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
+
+
+# 提现银行账号-删除-不传wdaccid
+def test_ti_xian_zhang_hao_delete_no_wdaccid():
+
+    paths = "/transaction/deleteWithdrawAccount.htm"
+    pam = {"partnerId": PARTNERID,
+           "merNo": MERNO_NO_USERID}
+
+    r_obj = Public_Request()
+
+    try:
+        r_resu = r_obj.public_request(pas=paths, parameters=pam)
+    except IndentationError as e:
+        print(e)
+
+    print(r_resu.text)
+
 if __name__ == '__main__':
-    test_zhuan_zhang_select()
+
+    test_ti_xian_zhang_hao_delete_no_wdaccid()
+
+
+
+
 
