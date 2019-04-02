@@ -462,6 +462,7 @@ def test_ti_xian_zhang_hao_delete_no_wdaccid():
         print(e)
 
     print(r_resu.text)
+    print(r_resu.text.find("Error report"))
 
 if __name__ == '__main__':
 
