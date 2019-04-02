@@ -150,6 +150,7 @@ def test_yu_e_select():
 
 # 余额查询-不传MERNO
 def test_yu_e_select_no_merno():
+
     print("----------------------------- 余额查询-不传MERNO -----------------------------")
     paths = "/merchant/showBalance.htm"
     pam = {"partnerId": PARTNERID}
@@ -380,10 +381,13 @@ def test_zhuan_zhang_select():
             isSuccess = True
             break
 
-    assert isSuccess == True
-
+    # assert isSuccess == True
+    if isSuccess is True:
+        assert 1 == 1
+    else:
+        assert 1 == 2
 
 
 if __name__ == '__main__':
-    test_ebay_order_submission()
+    test_zhuan_zhang_select()
 
