@@ -463,12 +463,14 @@ def test_ti_xian_zhang_hao_delete_no_wdaccid():
 
     print(r_resu.text)
     print(r_resu.text.find("Error report"))
+    assert r_resu.text.find("Error report") != -1
 
 if __name__ == '__main__':
 
     test_ti_xian_zhang_hao_delete_no_wdaccid()
-
-
-
+    print(dir(time))
+    print(range.__doc__)
+    a = set([1,2,3])
+    print(a)
 
 
