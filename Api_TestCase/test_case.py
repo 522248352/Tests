@@ -8,7 +8,8 @@ from global_parameter import *
 import random
 import time
 from data_base_conn import Data_Base_Conn
-
+import ConfigParser
+import configparser
 # 提现账户查询
 def test_cash_account_enquiry():
     print("----------------------------提现账户查询--------------------------")
@@ -465,12 +466,40 @@ def test_ti_xian_zhang_hao_delete_no_wdaccid():
     print(r_resu.text.find("Error report"))
     assert r_resu.text.find("Error report") != -1
 
+
+def test_test():
+    confs = configparser.ConfigParser()
+    confs.read("D:\eclipse-workspace\Tests\Api_TestCase\config.ini")
+
+    selons = confs.sections()
+    print(selons)
+    print(type(selons))
+    print(confs.options("global_parameter"))
+    print(type(confs.options("global_parameter")))
+    print(confs.get("global_parameter", "HOSTS"))
+    print(type(confs.get("global_parameter", "HOSTS")))
+    print(confs.get("global_parameter", "PARTNERID"))
+    # paths = "/payment/getPaymentRecords.htm"
+    # pam = {"partnerId": PARTNERID, "merNo": MERNO_NO_USERID}
+    #
+    # r_obj = Public_Request()
+    # r_resu = r_obj.public_request(pas=paths, parameters=pam)
+    #
+    # print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
+    # assert r_resu.json()["status"] == 1
+    # assert r_resu.json()["code"] == 11
+    #
+    # db = Data_Base_Conn()
+    # sql = "SELECT * FROM p_transaction WHERE MER_NO =" + MERNO_NO_USERID
+    # rows = db.play(sql=sql)
+
+
 if __name__ == '__main__':
 
-    test_ti_xian_zhang_hao_delete_no_wdaccid()
-    print(dir(time))
-    print(range.__doc__)
-    a = set([1,2,3])
-    print(a)
+    test_test()
+    # print(dir(time))
+    # print(range.__doc__)
+    # a = set([1,2,3])
+    # print(a)
 
 
