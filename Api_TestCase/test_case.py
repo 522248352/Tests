@@ -474,11 +474,12 @@ def test_test():
     selons = confs.sections()
     print(selons)
     print(type(selons))
-    print(confs.options("global_parameter"))
+    print(confs.options("database_sandbox"))
     print(type(confs.options("global_parameter")))
     print(confs.get("global_parameter", "HOSTS"))
     print(type(confs.get("global_parameter", "HOSTS")))
     print(confs.get("global_parameter", "PARTNERID"))
+
     # paths = "/payment/getPaymentRecords.htm"
     # pam = {"partnerId": PARTNERID, "merNo": MERNO_NO_USERID}
     #
