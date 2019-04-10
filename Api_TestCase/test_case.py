@@ -10,6 +10,7 @@ import time
 from data_base_conn import Data_Base_Conn
 import ConfigParser
 import configparser
+import os
 # 提现账户查询
 def test_cash_account_enquiry():
     print("----------------------------提现账户查询--------------------------")
@@ -467,19 +468,25 @@ def test_ti_xian_zhang_hao_delete_no_wdaccid():
     assert r_resu.text.find("Error report") != -1
 
 
-def test_test():
+# 配置文件ini的调用方法
+def test_pei_zhi_file_config_ini():
     confs = configparser.ConfigParser()
     confs.read("D:\eclipse-workspace\Tests\Api_TestCase\config.ini")
 
     selons = confs.sections()
+    options = confs.options("database_sandbox")
+    items = confs.items("database_sandbox")
+    print(items)
+    print(type(items))
+    print(type(items[0]))
     print(selons)
     print(type(selons))
-    print(confs.options("database_sandbox"))
-    print(type(confs.options("global_parameter")))
-    print(confs.get("global_parameter", "HOSTS"))
-    print(type(confs.get("global_parameter", "HOSTS")))
-    print(confs.get("global_parameter", "PARTNERID"))
 
+    print(type(confs.options("global_parameter")))
+
+    print(type(confs.get("global_parameter", "HOSTS")))
+
+    root_dir = os.path.dirname(os.path.abspath('.'))
     # paths = "/payment/getPaymentRecords.htm"
     # pam = {"partnerId": PARTNERID, "merNo": MERNO_NO_USERID}
     #
@@ -494,10 +501,13 @@ def test_test():
     # sql = "SELECT * FROM p_transaction WHERE MER_NO =" + MERNO_NO_USERID
     # rows = db.play(sql=sql)
 
+def test_te():
+    root_dir = os.path.dirname(os.path.abspath('.'))
+    print(root_dir)
 
 if __name__ == '__main__':
 
-    test_test()
+    test_add_ti_xian_bank_card()
     # print(dir(time))
     # print(range.__doc__)
     # a = set([1,2,3])
