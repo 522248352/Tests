@@ -328,8 +328,8 @@ def test_zhuan_zhang_apply():
            "merNo": MERNO_NO_USERID,
            "paymentType": 0,
            "country": "GBR",
-           "apiInfo": """{"IBAN":"iban","BIC":"bic","ABA":"aba","Payee bank name":"payyname","Payee":"payee"}""",
-           "receiveCurrency": "USD",
+           "apiInfo": """{"IBAN":"iban","BIC":"bic","Payee bank name":"payyname","Payee":"payee","Recipient Address":"address"}""",
+           "receiveCurrency": "GBP",
            "paymentCurrency": "EUR",
            "paymentAmount": 1000,
            "registrationNumber": 2563215500001,
@@ -418,7 +418,9 @@ def test_add_ti_xian_bank_card():
     print(len(rows))
     assert len(rows) == 1
     print(rows[0][0])
+    return r_resu.json()["code"]
 
+a = test_add_ti_xian_bank_card()
 
 # 提现银行账号-删除
 def test_ti_xian_zhang_hao_delete():
@@ -503,11 +505,15 @@ def test_pei_zhi_file_config_ini():
 
 def test_te():
     root_dir = os.path.dirname(os.path.abspath('.'))
+    root_dir1 = os.path.dirname(os.path.realpath(__file__))
+    print(root_dir1)
+
     print(root_dir)
+    print(a)
 
 if __name__ == '__main__':
 
-    test_add_ti_xian_bank_card()
+    test_zhuan_zhang_apply()
     # print(dir(time))
     # print(range.__doc__)
     # a = set([1,2,3])
