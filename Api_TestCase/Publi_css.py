@@ -1,6 +1,7 @@
 #coding=utf-8
 import json
 import requests
+import os
 
 def test_demo_1(a,*b):
 
@@ -61,12 +62,11 @@ class Bird(object):
         return self.age
 
 if __name__ == '__main__':
-    test_demo_1(1,1,2,3)
-    test_demo_1([1,2],[3,4],{1:2,2:3})
-
-    test_demo_2(1,2)
-    print("------------------------————————————————————————————")
-    b = Bird()
-    b.setName("xiaohua")
-    b.setAge("10")
-    print(b.getAge()+b.getName())
+    url = "http://www.kuaidi.com/index-ajaxselectcourierinfo-1202247993797-yunda.html"
+    r_pro = requests.get(url=url)
+    print(json.dumps(r_pro.json(), indent=2, ensure_ascii=False, sort_keys=False))
+    print(os.path.abspath("."))
+    with open("./test.xml", "r") as fis:
+        fi_a = fis.read()
+        print(fi_a)
+        print(type(fi_a))

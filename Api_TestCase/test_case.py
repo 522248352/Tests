@@ -332,7 +332,7 @@ def test_zhuan_zhang_apply():
            "receiveCurrency": "GBP",
            "paymentCurrency": "EUR",
            "paymentAmount": 1000,
-           "registrationNumber": 2563215500001,
+           "registrationNumber": 2,
            "taxDocumentImageId": 241354094869118976
     }
 
