@@ -2,15 +2,24 @@
 import json
 import requests
 import psycopg2
-
+from config_py import Config_Py
 
 # 连接数据库
 class Data_Base_Conn(object):
+
+    # 调用配置文件获取数据库连接信息
+    cp = Config_Py()
+    database = cp.value_get(seon="database_sandbox", opti="database")
+    user = cp.value_get(seon="database_sandbox", opti="user")
+    password = cp.value_get(seon="database_sandbox", opti="password")
+    host = cp.value_get(seon="database_sandbox", opti="host")
+    port = cp.value_get(seon="database_sandbox", opti="port")
 
     # 连接到一个给定的数据库
     def conn(self):
         try:
             conn = psycopg2.connect(database="test", user="ronhan", password="63oGsXpZTuOO3TEx", host="192.168.200.231", port="5432")
+            # conn = psycopg2.connect(database=Data_Base_Conn.database, user=Data_Base_Conn.user, password=Data_Base_Conn.password, host=Data_Base_Conn.host, port=Data_Base_Conn.port)
             return conn
         except:
             print("数据库连接异常Error")
