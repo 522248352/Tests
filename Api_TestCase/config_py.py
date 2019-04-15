@@ -1,7 +1,10 @@
 # coding=utf-8
 import configparser
 
+
 class Config_Py():
+
+    # 操作ini配置文件方法
 
     def conf_read(self):
 

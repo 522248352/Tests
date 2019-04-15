@@ -220,6 +220,7 @@ def test_zhang_hu_select():
 # 账户查询-merNo不填
 def test_zhang_hu_select_no_merno():
 
+    print("-------------------------账户查询-merNo不填------------------------------")
     paths = "/merchant/show.htm"
     pam = {"partnerId": PARTNERID}
 
@@ -235,6 +236,7 @@ def test_zhang_hu_select_no_merno():
 # 店铺查询
 def test_dian_pu_select():
 
+    print("-------------------------店铺查询------------------------------")
     paths = "/channel/showChannel.htm"
     pam = {"partnerId": PARTNERID, "merNo": MERNO_HAVA_USERID}
 
@@ -254,6 +256,7 @@ def test_dian_pu_select():
 # 店铺查询-查询固定id的店铺
 def test_dian_pu_select_channerid():
 
+    print("-------------------------店铺查询-查询固定id的店铺------------------------------")
     paths = "/channel/showChannel.htm"
     pam = {"partnerId": PARTNERID, "merNo": MERNO_HAVA_USERID, "channelId": 274464410007928832}
     r_obj = Public_Request()
@@ -271,6 +274,7 @@ def test_dian_pu_select_channerid():
 # 付款转账类型查询
 def test_zhuan_zhang_type_select():
 
+    print("-------------------------付款转账类型查询------------------------------")
     paths = "/payment/getPaymentTypes.htm"
     pam = {"partnerId": PARTNERID,"merNo": MERNO_NO_USERID}
 
@@ -286,6 +290,7 @@ def test_zhuan_zhang_type_select():
 # 付款转账汇率及手续费率查询-传金额
 def test_zhuan_zhang_hui_lv_select():
 
+    print("-------------------------付款转账汇率及手续费率查询-传金额------------------------------")
     paths = "/payment/getPaymentRateOrFee.htm"
     pam = {"partnerId": PARTNERID,
             "merNo": MERNO_NO_USERID,
@@ -305,6 +310,7 @@ def test_zhuan_zhang_hui_lv_select():
 
 def test_zhuan_zhang_hui_lv_no_amount():
 
+    print("-------------------------付款转账汇率及手续费率查询-不传金额------------------------------")
     paths = "/payment/getPaymentRateOrFee.htm"
     pam = {"partnerId": PARTNERID,
            "merNo": MERNO_NO_USERID,
@@ -323,6 +329,7 @@ def test_zhuan_zhang_hui_lv_no_amount():
 # 转账申请
 def test_zhuan_zhang_apply():
 
+    print("-------------------------转账申请------------------------------")
     paths = "/payment/paymentApply.htm"
     pam = {"partnerId": PARTNERID,
            "merNo": MERNO_NO_USERID,
@@ -358,6 +365,7 @@ def test_zhuan_zhang_apply():
 # 转账查询
 def test_zhuan_zhang_select():
 
+    print("-------------------------转账查询------------------------------")
     paths = "/payment/getPaymentRecords.htm"
     pam = {"partnerId": PARTNERID, "merNo": MERNO_NO_USERID}
 
@@ -393,6 +401,7 @@ def test_zhuan_zhang_select():
 # 添加提现银行卡
 def test_add_ti_xian_bank_card():
 
+    print("-------------------------添加提现银行卡------------------------------")
     paths = "/transaction/addWithdrawAccount.htm"
     pam = {"partnerId": PARTNERID,
            "merNo": MERNO_NO_USERID,
@@ -420,11 +429,11 @@ def test_add_ti_xian_bank_card():
     print(rows[0][0])
     return r_resu.json()["code"]
 
-a = test_add_ti_xian_bank_card()
 
 # 提现银行账号-删除
 def test_ti_xian_zhang_hao_delete():
 
+    print("-------------------------提现银行账号-删除------------------------------")
     paths = "/transaction/deleteWithdrawAccount.htm"
 
     db = Data_Base_Conn()
@@ -454,6 +463,7 @@ def test_ti_xian_zhang_hao_delete():
 # 提现银行账号-删除-不传wdaccid
 def test_ti_xian_zhang_hao_delete_no_wdaccid():
 
+    print("-------------------------提现银行账号-删除-不传wdaccid------------------------------")
     paths = "/transaction/deleteWithdrawAccount.htm"
     pam = {"partnerId": PARTNERID,
            "merNo": MERNO_NO_USERID}
@@ -470,50 +480,9 @@ def test_ti_xian_zhang_hao_delete_no_wdaccid():
     assert r_resu.text.find("Error report") != -1
 
 
-# 配置文件ini的调用方法
-def test_pei_zhi_file_config_ini():
-    confs = configparser.ConfigParser()
-    confs.read("D:\eclipse-workspace\Tests\Api_TestCase\config.ini")
-
-    selons = confs.sections()
-    options = confs.options("database_sandbox")
-    items = confs.items("database_sandbox")
-    print(items)
-    print(type(items))
-    print(type(items[0]))
-    print(selons)
-    print(type(selons))
-
-    print(type(confs.options("global_parameter")))
-
-    print(type(confs.get("global_parameter", "HOSTS")))
-
-    root_dir = os.path.dirname(os.path.abspath('.'))
-    # paths = "/payment/getPaymentRecords.htm"
-    # pam = {"partnerId": PARTNERID, "merNo": MERNO_NO_USERID}
-    #
-    # r_obj = Public_Request()
-    # r_resu = r_obj.public_request(pas=paths, parameters=pam)
-    #
-    # print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
-    # assert r_resu.json()["status"] == 1
-    # assert r_resu.json()["code"] == 11
-    #
-    # db = Data_Base_Conn()
-    # sql = "SELECT * FROM p_transaction WHERE MER_NO =" + MERNO_NO_USERID
-    # rows = db.play(sql=sql)
-
-def test_te():
-    root_dir = os.path.dirname(os.path.abspath('.'))
-    root_dir1 = os.path.dirname(os.path.realpath(__file__))
-    print(root_dir1)
-
-    print(root_dir)
-    print(a)
-
 if __name__ == '__main__':
 
-    test_zhuan_zhang_apply()
+    pass
     # print(dir(time))
     # print(range.__doc__)
     # a = set([1,2,3])
