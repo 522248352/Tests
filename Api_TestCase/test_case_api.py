@@ -18,7 +18,7 @@ def test_cash_account_enquiry():
     pam = {"partnerId": PARTNERID, "merNo": MERNO_HAVA_USERID}
 
     r_obj = Public_Request()
-    r_resu = r_obj.public_request(pas=paths,parameters=pam)
+    r_resu = r_obj.public_request(pas=paths, parameters=pam)
 
     print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
     assert r_resu.json()["status"] == 1
@@ -29,10 +29,10 @@ def test_cash_account_enquiry():
 def test_businessmen_can_use_channel():
     print("----------------------------商户可用通道查询--------------------------")
     paths = "/channel/showMerchantChannelType.htm"
-    pam = {"partnerId":PARTNERID,"merNo":MERNO_HAVA_USERID}
+    pam = {"partnerId": PARTNERID, "merNo": MERNO_HAVA_USERID}
 
     r_obj = Public_Request()
-    r_resu = r_obj.public_request(pas=paths,parameters=pam)
+    r_resu = r_obj.public_request(pas=paths, parameters=pam)
 
     print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
     assert r_resu.json()["status"] == 1
@@ -52,7 +52,7 @@ def test_create_shop():
     # maths = random.choice(range(1,100))
 
     pam = {"partnerId":PARTNERID,
-           "merNo":MERNO_HAVA_USERID,
+           "merNo":MERNO_NO_USERID,
            "channelTypeId":104073509965275136,
            "channelName":"7181ebay"+str(int(time.time())),
            "url":"http://www.baiducom",
@@ -63,9 +63,9 @@ def test_create_shop():
 
     r_obj = Public_Request()
 
-    r_resu = r_obj.public_request(pas=paths,parameters=pam)
+    r_resu = r_obj.public_request(pas=paths, parameters=pam)
 
-    print(json.dumps(r_resu.json(),indent=2,sort_keys=False,ensure_ascii=False))
+    print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
     assert r_resu.json()["status"] == 1
     assert r_resu.json()["code"] == 20002
     mer_no = r_resu.json()["data"]["channelId"]
@@ -142,7 +142,7 @@ def test_ebay_order_submission():
 def test_yu_e_select():
     print("----------------------------- 余额查询 -----------------------------")
     paths = "/merchant/showBalance.htm"
-    pam = {"partnerId": PARTNERID, "merNo": MERNO_HAVA_USERID}
+    pam = {"partnerId": PARTNERID, "merNo": MERNO_NO_USERID}
     r_obj = Public_Request()
     r_resu = r_obj.public_request(pas=paths, parameters=pam)
     print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
@@ -258,7 +258,7 @@ def test_dian_pu_select_channerid():
 
     print("-------------------------店铺查询-查询固定id的店铺------------------------------")
     paths = "/channel/showChannel.htm"
-    pam = {"partnerId": PARTNERID, "merNo": MERNO_HAVA_USERID, "channelId": 274464410007928832}
+    pam = {"partnerId": PARTNERID, "merNo": MERNO_NO_USERID, "channelId": 284182608722690048}
     r_obj = Public_Request()
     r_resu = r_obj.public_request(pas=paths, parameters=pam)
     print(json.dumps(r_resu.json(), indent=2, sort_keys=False, ensure_ascii=False))
@@ -266,7 +266,7 @@ def test_dian_pu_select_channerid():
     assert r_resu.json()["code"] == 101
 
     db = Data_Base_Conn()
-    sql = "SELECT * from m_channel_info where CHANNEL_ID='274464410007928832'"
+    sql = "SELECT * from m_channel_info where CHANNEL_ID='284182608722690048'"
     rows = db.play(sql=sql)
     assert len(rows) == r_resu.json()["data"]["count"] == 1
 
@@ -482,9 +482,9 @@ def test_ti_xian_zhang_hao_delete_no_wdaccid():
 
 if __name__ == '__main__':
 
-    pass
+    test_zhuan_zhang_select()
     # print(dir(time))
     # print(range.__doc__)
-    # a = set([1,2,3])
-    # print(a)
+    a = set([1,2,3])
+    print(a)
 

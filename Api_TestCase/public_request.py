@@ -9,8 +9,8 @@ class Public_Request(object):
         url = HOSTS + pas
 
         r = requests.post(url=url, data=parameters, files=files_image)
-
-        # print(r.text)
+        # r = requests.request("POST", )
+        print(r.text)
         return r
 
 
