@@ -16,5 +16,11 @@ time.sleep(3)
 
 rows = driver.find_elements_by_tag_name("tr")
 print(len(rows))
+print(type(rows))
+for row in rows:
+    print(row.text)
+    for a in row.find_elements_by_tag_name("td"):
+        print(a.text)
+
 
 driver.quit()
